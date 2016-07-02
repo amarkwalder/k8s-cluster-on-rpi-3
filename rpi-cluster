@@ -1,0 +1,63 @@
+#!/bin/bash
+
+usage ()
+{
+  echo "Usage: rpi-cluster [OPTIONS] COMMAND [arg...]"
+  echo "       rpi-cluster [ --help | -v | --version ]"
+  echo ""
+  echo "Utility script to manage Kubernetes on a Raspberry Pi Cluster."
+  echo ""
+  echo "Options:"
+  echo ""
+  echo "  -h, --help        Print usage"
+  echo "  -v, --version     Print version information and quit"
+  echo ""
+  echo "Commands:"
+  echo ""
+  echo "  Host System:"
+  echo "    flash           Flash SD card with a Raspberry Pi Image"
+  echo ""
+  echo "  Raspberry Pi 3:"
+  echo "    pull            Pull container images"
+  echo "    install         Install Kubernetes"
+  echo "    enable-master   Enables Kubernetes Master Node"
+  echo "    enable-worker   Enables Kubernetes Worker Node"
+  echo "    disable         Disables Kubernetes on this node"
+  echo "    uninstall       Removes Kubernetes from this node"
+  echo "    install-master  Run uninstall | pull | install | enable-master"
+  echo "    install-worker  Run uninstall | pull | install | enable-worker"
+  echo ""
+  echo "  Helper Functions:"
+  echo "    clean           Cleans the directory and resets to original state"
+  echo "    download        Download Kubernetes"
+  echo ""
+
+  exit
+}
+
+if [[ $# < 1 ]]; then
+  usage
+fi
+
+BASEDIR=$(dirname "$0")
+source $BASEDIR/scripts/util.sh
+
+case "$1" in
+  flash)           source $BASEDIR/scripts/flash.sh;;
+  download)        source $BASEDIR/scripts/download.sh;;
+  pull)            source $BASEDIR/scripts/pull.sh;;
+  install-master)  source $BASEDIR/scripts/install-master.sh;;
+  install-worker)  source $BASEDIR/scripts/install-worker.sh;;
+  disable)         source $BASEDIR/scripts/disable.sh;;
+  config)          source $BASEDIR/scripts/config.sh;;
+  clean)           source $BASEDIR/scripts/clean.sh;;
+  -h | --help)     usage;;
+  -v | --version)  source $BASEDIR/scripts/version.sh;;
+  *)               usage;;
+esac
+
+shift
+
+mkdir -p ${BASEDIR}/logs
+
+exec-command $@
