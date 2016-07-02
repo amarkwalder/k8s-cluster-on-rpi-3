@@ -8,25 +8,45 @@ source $BASEDIR/rpi-cluster-config
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
 NC='\033[0m'
 
-spinner-on()
+source $BASEDIR/scripts/spinner.sh
+source $BASEDIR/scripts/logger.sh
+source $BASEDIR/scripts/service.sh
+source $BASEDIR/scripts/is-status.sh
+
+status-master()
 {
-  local i sp n
-  sp="/-\|"
-  n=${#sp}
-#  printf " "
-  ( while sleep 0.1; do
-      printf "%s\b" "${sp:i++%n:1}"
-    done
-  ) &
-  PID=$!
-  disown
+  if [ "$(is-master-installed)" == "INSTALLED" ]; then
+    if [ "$(is-master-enabled)" == "ENABLED" ]; then
+      if [ "$(is-master-active)" == "ACTIVE" ]; then
+        [ "$1" == "LOG" ] && echo "${GREEN}ENABLED${NC}" || echo "ENABLED"
+      else
+        [ "$1" == "LOG" ] && echo "${YELLOW}ENABLED - NOT ACTIVE${NC}" || echo "ENABLED - NOT ACTIVE"
+      fi
+    else
+      [ "$1" == "LOG" ] && echo "${YELLOW}DISABLED${NC}" || echo "DISABLED"
+    fi
+  else
+    [ "$1" == "LOG" ] && echo "${RED}NOT INSTALLED${NC}" || echo "NOT INSTALLED"
+  fi   
 }
 
-spinner-off()
+status-worker()
 {
-  kill $PID
-  printf "%s\b" " "
-  printf "$1\n"
+  if [ "$(is-worker-installed)" == "INSTALLED" ]; then
+    if [ "$(is-worker-enabled)" == "ENABLED" ]; then
+      if [ "$(is-worker-active)" == "ACTIVE" ]; then
+        [ "$1" == "LOG" ] && echo "${GREEN}ENABLED${NC}" || echo "ENABLED"
+      else
+        [ "$1" == "LOG" ] && echo "${YELLOW}ENABLED - NOT ACTIVE${NC}" || echo "ENABLED - NOT ACTIVE"
+      fi
+    else
+      [ "$1" == "LOG" ] && echo "${YELLOW}DISABLED${NC}" || echo "DISABLED"
+    fi
+  else
+    [ "$1" == "LOG" ] && echo "${RED}NOT INSTALLED${NC}" || echo "NOT INSTALLED"
+  fi
 }
+

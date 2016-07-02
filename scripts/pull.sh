@@ -7,15 +7,18 @@ exec-command()
 
 pull()
 {
-  echo -n "... Pulling ETCD      "
+  log-header "Pull Kubernetes Images"
+
+  log "- Pulling Etc"
   pull-img gcr.io/google_containers/etcd-arm:${ETCD_VERSION}
 
-  echo -n "... Pulling FLANNELD  "
+  log "- Pulling Flannel"
   pull-img gcr.io/google_containers/flannel-arm:${FLANNELD_VERSION}
 
-  echo -n "... Pulling HYPERKUBE "
+  log "- Pulling Hyperkube"
   pull-img gcr.io/google_containers/hyperkube-arm:v${HYPERKUBE_VERSION}
 
+  log-footer
 }
 
 pull-img()

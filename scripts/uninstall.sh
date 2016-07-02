@@ -7,20 +7,24 @@ exec-command()
 
 uninstall()
 {
-  source $BASEDIR/install.sh
-  stop-kubernetes-master
-  stop-kubernetes-worker
+  log-header "Remove Kubernetes" 
 
-  echo -n "... Unnstall Kubernetes  "
+  log "- Stopping Kubernetes Master"
+  remove-service kubernetes-master /etc/systemd/system/kubernetes-master.service
+
+  log "- Stopping Kubernetes Worker"
+  remove-service kubernetes-worker /etc/systemd/system/kubernetes-worker.service
+
+  log "- Uninstall Kubernetes"
   spinner-on
-  [ -f /etc/kubernetes ] && rm -rf /etc/kubernetes
-  mkdir -p /etc/kubernetes/master
-  rm /etc/systemd/system/kubernetes-master.service
-  rm /etc/systemd/system/kubernetes-worker.service
-  systemctl daemon-reload
-  if [  ]; then
+  rm -rf /etc/kubernetes
+  
+  if [[ $(is-system-installed) == "NOT INSTALLED" ]]; then
     spinner-off "[${GREEN}OK${NC}]"
   else
     spinner-off "[${RED}FAILED${NC}]"
   fi
+
+  log-footer
 }
+

@@ -7,7 +7,10 @@ exec-command()
 
 download()
 {
-  echo -n "... Download Kubernetes  "
+  log-header "Download Kubernetes" 
+
+  log "Download Kubernetes"
+
   spinner-on
   mkdir -p $1
   curl -sSL https://github.com/kubernetes/kubernetes/releases/download/v${KUBERNETES_VERSION}/kubernetes.tar.gz | tar -C $1 -xz --strip-components=1
@@ -17,4 +20,6 @@ download()
   else
     spinner-off "[${RED}FAILED${NC}]"
   fi
+
+  log-footer
 }

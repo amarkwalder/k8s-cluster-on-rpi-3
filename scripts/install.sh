@@ -7,49 +7,19 @@ exec-command()
 
 install()
 {
-  stop-kubernetes-master
-  stop-kubernetes-worker
-  install-kubernetes
-}
+  log-header "Install Kubernetes"
 
-stop-kubernetes-master()
-{
-  echo -n "... Stopping Kubernetes Master  "
-  spinner-on
-  systemctl stop kubernetes-master
-  if [  ]; then
-    spinner-off "[${GREEN}OK${NC}]"
-  else
-    spinner-off "[${RED}FAILED${NC}]"
-  fi
-}
+  log "- Install Kubernetes Master Configuration"
+  install-config master
 
-stop-kubernetes-worker()
-{
-  echo -n "... Stopping Kubernetes Worker  "
-  spinner-on
-  systemctl stop kubernetes-worker
-  if [  ]; then
-    spinner-off "[${GREEN}OK${NC}]"
-  else
-    spinner-off "[${RED}FAILED${NC}]"
-  fi
-}
+  log "- Install Kubernetes Master Service"
+  install-service kubernetes-master /etc/systemd/system/kubernetes-master.service
 
-install-kubernetes()
-{
-  echo -n "... Install Kubernetes  "
-  spinner-on
-  [ -f /etc/kubernetes ] && rm -rf /etc/kubernetes
-  mkdir -p /etc/kubernetes/master
-  cp $BASEDIR/src/kubernetes-master.service /etc/systemd/system/
-  cp $BASEDIR/src/kubernetes-master.yaml /etc/kubernetes/master/kubernetes-master.yaml
-  cp $BASEDIR/src/kubernetes-worker.service /etc/systemd/system/
-  cp $BASEDIR/src/kubernetes-worker.yaml /etc/kubernetes/worker/kubernetes-worker.yaml
-  systemctl daemon-reload
-  if [  ]; then
-    spinner-off "[${GREEN}OK${NC}]"
-  else
-    spinner-off "[${RED}FAILED${NC}]"
-  fi
+  log "- Install Kubernetes Worker Configuration"
+  install-config worker
+
+  log "- Install Kubernetes Worker"
+  install-service kubernetes-worker /etc/systemd/system/kubernetes-worker.service
+
+  log-footer
 }

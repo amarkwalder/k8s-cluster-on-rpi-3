@@ -2,11 +2,21 @@
 
 exec-command()
 {
-  echo -n "... Delete directory: kubernetes        "
+  clean
+}
+
+clean()
+{
+
+  log-header "Clean directory"
+
+  log "- Delete directory: kubernetes"
   del-dir $BASEDIR/kubernetes/
 
-  echo -n "... Delete directory: logs              "
+  log "- Delete directory: logs"
   del-dir $BASEDIR/logs/
+
+  log-footer
 }
 
 del-dir()
