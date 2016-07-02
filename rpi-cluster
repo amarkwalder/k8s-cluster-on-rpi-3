@@ -18,14 +18,14 @@ usage ()
   echo "    flash           Flash SD card with a Raspberry Pi Image"
   echo ""
   echo "  Raspberry Pi 3:"
-  echo "    pull            Pull container images"
   echo "    install         Install Kubernetes"
   echo "    enable-master   Enables Kubernetes Master Node"
   echo "    enable-worker   Enables Kubernetes Worker Node"
+  echo "    pull            Pull container images"
   echo "    disable         Disables Kubernetes on this node"
   echo "    uninstall       Removes Kubernetes from this node"
-  echo "    install-master  Run uninstall | pull | install | enable-master"
-  echo "    install-worker  Run uninstall | pull | install | enable-worker"
+  echo "    install-master  Run uninstall | install | enable-master | pull"
+  echo "    install-worker  Run uninstall | install | enable-worker | pull"
   echo ""
   echo "  Helper Functions:"
   echo "    clean           Cleans the directory and resets to original state"
@@ -39,17 +39,25 @@ if [[ $# < 1 ]]; then
   usage
 fi
 
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 1>&2
+   exit 1
+fi
+
 BASEDIR=$(dirname "$0")
 source $BASEDIR/scripts/util.sh
 
 case "$1" in
   flash)           source $BASEDIR/scripts/flash.sh;;
-  download)        source $BASEDIR/scripts/download.sh;;
+  install)         source $BASEDIR/scripts/install.sh;; 
+  enable-master)   source $BASEDIR/scripts/enable-master.sh;;
+  enable-worker)   source $BASEDIR/scripts/enable-worker.sh;;
   pull)            source $BASEDIR/scripts/pull.sh;;
+  disable)         source $BASEDIR/scripts/disable.sh;; 
+  uninstall)       source $BASEDIR/scripts/uninstall.sh;; 
   install-master)  source $BASEDIR/scripts/install-master.sh;;
   install-worker)  source $BASEDIR/scripts/install-worker.sh;;
-  disable)         source $BASEDIR/scripts/disable.sh;;
-  config)          source $BASEDIR/scripts/config.sh;;
+  download)        source $BASEDIR/scripts/download.sh;;  
   clean)           source $BASEDIR/scripts/clean.sh;;
   -h | --help)     usage;;
   -v | --version)  source $BASEDIR/scripts/version.sh;;
