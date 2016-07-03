@@ -1,12 +1,12 @@
 [Unit]
-Description=Kubernetes Worker
+Description=Kubernetes Kubelet (Worker)
 Documentation=https://github.com/kubernetes/kubernetes
 
 [Service]
 ExecStart=/usr/bin/kubelet  \
---api-servers=http://rpi-master:8080 \
+--api-servers=http://192.168.1.52:8080 \
 --allow-privileged=true \
---config=/etc/kubernetes/manifests \
+--config=/etc/kubernetes/worker \
 --v=2
 Restart=on-failure
 RestartSec=5

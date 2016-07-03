@@ -2,12 +2,12 @@
 
 exec-command()
 {
-  download
+  download-server
 }
 
-download()
+download-server()
 {
-  log-header "Download & Extract Kubernetes" 
+  log-header "Download & Extract Kubernetes (Server)" 
 
   log "Download Kubernetes"
   download-kubernetes https://github.com/kubernetes/kubernetes/releases/download/v${KUBERNETES_VERSION}/kubernetes.tar.gz $BASEDIR/build/kubernetes/
@@ -15,14 +15,14 @@ download()
   log "Extract Kubernetes Server (ARM)" 
   extract $BASEDIR/build/kubernetes/server/kubernetes-server-linux-arm.tar.gz $BASEDIR/build/kubernetes-server-linux-arm/
 
-#  log "Extract Kubernetes Server (ARM64)"
-#  extract $BASEDIR/build/kubernetes/server/kubernetes-server-linux-arm64.tar.gz $BASEDIR/build/kubernetes-server-linux-arm64/
+  log "Extract Kubernetes Server (ARM64)"
+  extract $BASEDIR/build/kubernetes/server/kubernetes-server-linux-arm64.tar.gz $BASEDIR/build/kubernetes-server-linux-arm64/
 
-#  log "Extract Kubernetes Server (AMD64)"
-#  extract $BASEDIR/build/kubernetes/server/kubernetes-server-linux-amd64.tar.gz $BASEDIR/build/kubernetes-server-linux-amd64/
+  log "Extract Kubernetes Server (AMD64)"
+  extract $BASEDIR/build/kubernetes/server/kubernetes-server-linux-amd64.tar.gz $BASEDIR/build/kubernetes-server-linux-amd64/
 
-#  log "Extract Kubernetes Server (PPC64)"
-#  extract $BASEDIR/build/kubernetes/server/kubernetes-server-linux-ppc64le.tar.gz $BASEDIR/build/kubernetes-server-linux-ppc64le/
+  log "Extract Kubernetes Server (PPC64)"
+  extract $BASEDIR/build/kubernetes/server/kubernetes-server-linux-ppc64le.tar.gz $BASEDIR/build/kubernetes-server-linux-ppc64le/
 
   log "Extract Kubernetes Manifests"
   extract $BASEDIR/build/kubernetes/server/kubernetes-manifests.tar.gz $BASEDIR/build/kubernetes-manifests/

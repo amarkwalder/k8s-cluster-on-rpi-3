@@ -6,15 +6,16 @@ spec:
   hostNetwork: true
   containers:
     - name: "etcd"
-      image: "etcd"
+      image: "gcr.io/google_containers/etcd-arm:2.2.5"
       args:
+        - "/usr/local/bin/etcd"
         - "--data-dir=/var/lib/etcd"
         - "--advertise-client-urls=http://127.0.0.1:2379"
         - "--listen-client-urls=http://127.0.0.1:2379"
         - "--listen-peer-urls=http://127.0.0.1:2380"
         - "--name=etcd"
     - name: "kube-apiserver"
-      image: "hyperkube"
+      image: "gcr.io/google_containers/hyperkube-arm:v1.3.0"
       args:
         - "/hyperkube"
         - "apiserver"
@@ -24,21 +25,21 @@ spec:
         - "--service-cluster-ip-range=10.200.20.0/24"
         - "--v=2"
     - name: "kube-controller-manager"
-      image: "hyperkube"
+      image: "gcr.io/google_containers/hyperkube-arm:v1.3.0"
       args:
         - "/hyperkube"
         - "controller-manager"
         - "--master=http://127.0.0.1:8080"
         - "--v=2"
     - name: "kube-scheduler"
-      image: "hyperkube"
+      image: "gcr.io/google_containers/hyperkube-arm:v1.3.0"
       args:
         - "/hyperkube"
         - "scheduler"
         - "--master=http://127.0.0.1:8080"
         - "--v=2"
     - name: "kube-proxy"
-      image: "hyperkube"
+      image: "gcr.io/google_containers/hyperkube-arm:v1.3.0"
       args:
         - "/hyperkube"
         - "proxy"

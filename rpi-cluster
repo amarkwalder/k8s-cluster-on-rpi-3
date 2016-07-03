@@ -9,26 +9,29 @@ usage ()
   echo ""
   echo "Options:"
   echo ""
-  echo "  -h, --help        Print usage"
-  echo "  -v, --version     Print version information and quit"
+  echo "  -h, --help          Print usage"
+  echo "  -v, --version       Print version information"
   echo ""
   echo "Commands:"
   echo ""
   echo "  Host System:"
-  echo "    flash           Flash SD card with a Raspberry Pi Image"
+  echo "    flash             Flash SD card with a Raspberry Pi image"
+  echo "    download          Download and extract Kubernetes"
+  echo "    install-client    Install Kubernetes Client"
+  echo "    uninstall-client  Remove Kubernetes from Client"
   echo ""
   echo "  Raspberry Pi 3:"
-  echo "    install         Install Kubernetes"
-  echo "    enable-master   Enables Kubernetes Master Node"
-  echo "    enable-worker   Enables Kubernetes Worker Node"
-  echo "    pull            Pull container images"
-  echo "    disable         Disables Kubernetes on this node"
-  echo "    uninstall       Removes Kubernetes from this node"
+  echo "    download          Download and axtract Kubernetes"
+  echo "    install-server    Install Kubernetes server"
+  echo "    enable-master     Enables Kubernetes master node"
+  echo "    enable-worker     Enables Kubernetes worker node"
+  echo "    pull              Pull container images"
+  echo "    disable           Disables Kubernetes on this node"
+  echo "    uninstall-server  Remove Kubernetes from this node"
   echo ""
   echo "  Helper Functions:"
-  echo "    status          Installation status"
-  echo "    clean           Cleans the directory and resets to original state"
-  echo "    download        Download Kubernetes"
+  echo "    status            System Status"
+  echo "    clean             Cleans the directory and resets to original state"
   echo ""
 
   exit
@@ -47,19 +50,21 @@ BASEDIR=$(dirname "$0")
 source $BASEDIR/scripts/util.sh
 
 case "$1" in
-  flash)           source $BASEDIR/scripts/flash.sh;;
-  install)         source $BASEDIR/scripts/install.sh;; 
-  enable-master)   source $BASEDIR/scripts/enable-master.sh;;
-  enable-worker)   source $BASEDIR/scripts/enable-worker.sh;;
-  pull)            source $BASEDIR/scripts/pull.sh;;
-  disable)         source $BASEDIR/scripts/disable.sh;; 
-  uninstall)       source $BASEDIR/scripts/uninstall.sh;; 
-  status)          source $BASEDIR/scripts/status.sh;;
-  download)        source $BASEDIR/scripts/download.sh;;  
-  clean)           source $BASEDIR/scripts/clean.sh;;
-  -h | --help)     usage;;
-  -v | --version)  source $BASEDIR/scripts/version.sh;;
-  *)               usage;;
+  flash)             source $BASEDIR/scripts/flash.sh;;
+  install-client)    source $BASEDIR/scripts/install-client.sh;; 
+  install-server)    source $BASEDIR/scripts/install-server.sh;;
+  enable-master)     source $BASEDIR/scripts/enable-master.sh;;
+  enable-worker)     source $BASEDIR/scripts/enable-worker.sh;;
+  pull)              source $BASEDIR/scripts/pull.sh;;
+  disable)           source $BASEDIR/scripts/disable.sh;; 
+  uninstall-client)  source $BASEDIR/scripts/uninstall-client.sh;; 
+  uninstall-server)  source $BASEDIR/scripts/uninstall-server.sh;;
+  status)            source $BASEDIR/scripts/status.sh;;
+  download)          source $BASEDIR/scripts/download.sh;;  
+  clean)             source $BASEDIR/scripts/clean.sh;;
+  -h | --help)       usage;;
+  -v | --version)    source $BASEDIR/scripts/version.sh;;
+  *)                 usage;;
 esac
 
 shift

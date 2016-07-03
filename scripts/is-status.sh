@@ -29,7 +29,7 @@ is-worker-installed()
 
 is-master-active()
 {
-  if [ $(systemctl is-active kubernetes-master) == "active" ]; then
+  if [ "$(systemctl is-active kubernetes-master)" == "active" ]; then
     [ "$1" == "LOG" ] && echo "${GREEN}ACTIVE${NC}" || echo "ACTIVE"
   else
     [ "$1" == "LOG" ] && echo "${RED}NOT ACTIVE${NC}" || echo "NOT ACTIVE"
@@ -38,7 +38,7 @@ is-master-active()
 
 is-worker-active()
 {
-  if [ $(systemctl is-active kubernetes-worker) == "active" ]; then
+  if [ "$(systemctl is-active kubernetes-worker)" == "active" ]; then
     [ "$1" == "LOG" ] && echo "${GREEN}ACTIVE${NC}" || echo "ACTIVE"
   else
     [ "$1" == "LOG" ] && echo "${RED}NOT ACTIVE${NC}" || echo "NOT ACTIVE"
@@ -47,7 +47,7 @@ is-worker-active()
 
 is-master-enabled()
 {
-  if [ $(systemctl is-enabled kubernetes-master) == "enabled" ]; then
+  if [ "$(systemctl is-enabled kubernetes-master)" == "enabled" ]; then
     [ "$1" == "LOG" ] && echo "${GREEN}ENABLED${NC}" || echo "ENABLED"
   else
     [ "$1" == "LOG" ] && echo "${RED}DISABLED${NC}" || echo "DISABLED"
@@ -56,7 +56,7 @@ is-master-enabled()
 
 is-worker-enabled()
 {
-  if [ $(systemctl is-enabled kubernetes-worker) == "enabled" ]; then
+  if [ "$(systemctl is-enabled kubernetes-worker)" == "enabled" ]; then
     [ "$1" == "LOG" ] && echo "${GREEN}ENABLED${NC}" || echo "ENABLED"
   else
     [ "$1" == "LOG" ] && echo "${RED}DISABLED${NC}" || echo "DISABLED"
