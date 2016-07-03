@@ -18,6 +18,9 @@ pull()
   log "- Pulling Hyperkube"
   pull-img gcr.io/google_containers/hyperkube-arm:v${HYPERKUBE_VERSION}
 
+  log "- Pulling Pause"
+  pull-img gcr.io/google_containers/pause-arm:${PAUSE_VERSION}
+
   log-footer
 }
 
