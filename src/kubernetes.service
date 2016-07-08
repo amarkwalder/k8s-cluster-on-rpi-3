@@ -1,0 +1,13 @@
+[Unit]
+Description=Kubernetes Cluster Node
+Documentation=https://github.com/kubernetes/kubernetes
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=fork
+ExecStart=/etc/kubernetes/scripts/kubernetes.sh
+ExecStop=/etc/kubernetes/scripts/turndown.sh
+
+[Install]
+WantedBy=multi-user.target

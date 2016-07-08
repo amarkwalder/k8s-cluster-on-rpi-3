@@ -1,0 +1,67 @@
+From 0ddb3a3a1e793e7677625cb63190edc6d0236370 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andr=C3=A9=20Markwalder?= <andre.markwalder@ti8m.ch>
+Date: Tue, 5 Jul 2016 01:49:26 +0000
+Subject: [PATCH 1/2] Silent mode extensions and offline capability added.
+
+---
+ docker-multinode/kubernetes.sh | 48 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+ create mode 100755 docker-multinode/kubernetes.sh
+
+diff --git a/docker-multinode/kubernetes.sh b/docker-multinode/kubernetes.sh
+new file mode 100755
+index 0000000..a497508
+--- /dev/null
++++ b/docker-multinode/kubernetes.sh
+@@ -0,0 +1,48 @@
++#!/bin/bash
++
++kube::multinode::service-main(){
++
++  BASEDIR=$(dirname "$0")
++  source ${BASEDIR}/common.sh
++
++  # 1.) Environment variable CONFIG
++  # 2.) Location: CONFIG=/etc/kubernetes/k8s.conf.
++  # 3.) Location: CONFIG=$(dirname "$0")/k8s.conf
++  # 4.) Location: CONFIG=./k8s.conf
++  # 5.) Using default values
++  if [[ ${CONFIG} != "" ]] && [[ -f ${CONFIG} ]]; then
++    CONFIG=$(realpath ${CONFIG})
++    kube::log::status "Configuration: Loading configuration values from [${CONFIG}]"
++    source ${CONFIG}
++  elif [[ -f /etc/kubernetes/k8s.conf ]]; then
++    CONFIG=$(realpath /etc/kubernetes/k8s.conf)
++    kube::log::status "Configuration: Loading configuration values from [${CONFIG}]"
++    source ${CONFIG}
++  elif [[ -f $(dirname "$0")/k8s.conf ]]; then
++    CONFIG=$(realpath $(dirname "$0")/k8s.conf)
++    kube::log::status "Configuration: Loading configuration values from [${CONFIG}]"
++    source ${CONFIG}
++  elif [[ -f ./k8s.conf ]]; then
++    CONFIG=$(realpath ./k8s.conf)
++    kube::log::status "Configuration: Loading configuration values from [$(realpath $CONFIG)]"
++    source $CONFIG
++  else
++    CONFIG=
++    kube::log::status "Configuration: Using default values"
++  fi
++
++  MY_IP=$(hostname -I | awk '{print $1}')
++
++  kube::log::status "My IP     : ${MY_IP}"
++  kube::log::status "Master IP : ${MASTER_IP}"
++
++  if [[ ${MY_IP} == ${MASTER_IP} ]] || [[ -z ${MASTER_IP} ]]; then
++    kube::log::status "Start Kubernetes MASTER on this node..."
++    echo ${BASEDIR}/master.sh
++  else
++    kube::log::status "Start Kubernetes WORKER on this node..."
++    echo ${BASEDIR}/worker.sh
++  fi
++}
++
++kube::multinode::service-main
+-- 
+2.1.4
+
