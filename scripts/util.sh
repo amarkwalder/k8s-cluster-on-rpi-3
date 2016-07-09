@@ -6,6 +6,11 @@ if [ ! -f $BASEDIR/rpi-cluster-config ]; then
 fi
 source $BASEDIR/rpi-cluster-config
 
+while [[ ${MASTER_IP} == "ASK" ]] || [[ -z ${MASTER_IP} ]]; do
+  read -p "Please set the Kubernetes Master IP address: " MASTER_IP 
+  MASTER_IP=${MASTER_IP:-ASK}
+done
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
