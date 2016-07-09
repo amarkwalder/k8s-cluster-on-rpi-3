@@ -1,1 +1,7 @@
-# k8s-cluster-on-rpi-3
+# Kubernetes Cluster on Raspberry Pi 3
+
+## Clone Repository to Mac OSX
+
+ 
+
+ 
