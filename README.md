@@ -10,7 +10,7 @@ git clone http://github.com/amarkwalder/k8s-cluster-on-rpi
 
 ### Flash SD Card for RPI
 Each Raspberry Pi requires an SD card with an operating system installed. The Kubernetes Cluster requires Docker to run, therefore
-we decided to use the Hypriot OS () which will be downloaded during the flashing process.
+we decided to use Hypriot OS (http://blog.hypriot.com) which will be downloaded during the flashing process.
 To start the flash process start the shell script from the cloned repository.
 ```
 cd k8s-cluster-on-rpi
