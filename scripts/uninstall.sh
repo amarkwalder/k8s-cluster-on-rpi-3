@@ -20,16 +20,17 @@ uninstall-kubernetes()
   log-header "Remove Kubernetes" 
   K8S_ETC_DIR=/etc/kubernetes
   
+  remove ${K8S_ETC_DIR}/scripts/common.sh
   remove ${K8S_ETC_DIR}/scripts/kubernetes.sh 
   remove ${K8S_ETC_DIR}/scripts/master.sh 
   remove ${K8S_ETC_DIR}/scripts/turndown.sh 
   remove ${K8S_ETC_DIR}/scripts/worker.sh 
   remove ${K8S_ETC_DIR}/scripts/
-  
   remove ${K8S_ETC_DIR}/k8s.conf
   remove ${K8S_ETC_DIR}/
-
   remove /etc/systemd/system/kubernetes.service
+  remove /etc/profile.d/kubernetes.sh
+  remove /usr/bin/kubectl
 
   log "- Reload Services"
   spinner-on
