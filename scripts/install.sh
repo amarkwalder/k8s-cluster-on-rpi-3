@@ -126,19 +126,3 @@ EOF
   log-footer
 }
 
-
-
-
-
-
-download(){
-  if [[ $(which curl 2>&1) ]]; then
-    curl -sSLo $1 $2
-  elif [[ $(which wget 2>&1) ]]; then
-    wget -qO $1 $2
-  else
-    echo "Couldn't find curl or wget. Bailing out."
-    exit 1 
-  fi
-}
-

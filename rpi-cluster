@@ -40,6 +40,11 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 BASEDIR=$(dirname "$0")
+if [[ "${OSTYPE}" == "darwin"* ]]; then
+  realpath() {
+    [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+  }
+fi
 BASEDIR=$(realpath ${BASEDIR})
 source $BASEDIR/scripts/util.sh
 

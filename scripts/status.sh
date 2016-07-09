@@ -16,9 +16,11 @@ status()
 
   echo ""
 
-  log "Kubernetes" && printf "$(status-kubernetes LOG)\n" 
-  log "Master|Worker" && printf "$(is-master-or-worker LOG)\n"
+  if [[ "${OSTYPE}" != "darwin"* ]]; then
+    log "Kubernetes" && printf "$(status-kubernetes LOG)\n" 
+    log "Master|Worker" && printf "$(is-master-or-worker LOG)\n"
+    echo ""
+  fi
 
-  echo ""
 }
 
