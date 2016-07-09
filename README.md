@@ -3,7 +3,7 @@
 ## Prepare RPI 
 
 ### Clone RPI Cluster Repository
-To start with flash the SD cards for the Raspberry Pi 3, you have to clone the Kubernetes Cluster on RPI Repository to your local machine.
+To start with flashing the SD cards for the Raspberry Pi 3, you have to clone the "Kubernetes Cluster on RPI 3" Repository to your local machine.
 ```
 git clone http://github.com/amarkwalder/k8s-cluster-on-rpi
 ```
