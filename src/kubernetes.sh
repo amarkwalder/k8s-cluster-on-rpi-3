@@ -5,25 +5,6 @@ kube::multinode::service-main(){
   BASEDIR=$(dirname "$0")
   source ${BASEDIR}/common.sh
 
-  kube::multinode::service-config
-
-  case "$1" in
-    start)
-      kube::multinode::service-start
-      ;;
-    stop)
-      kube::multinode::service-stop
-      ;;
-    *)
-      kube::log::error "Error: Wrong argument '$1' should be one of {start|stop}"
-      exit 1
-      ;;
-  esac
-
-}
-
-kube::multinode::service-config(){
-
   # 1.) Environment variable CONFIG
   # 2.) Location: CONFIG=/etc/kubernetes/k8s.conf.
   # 3.) Location: CONFIG=$(dirname "$0")/k8s.conf
@@ -50,6 +31,18 @@ kube::multinode::service-config(){
     kube::log::status "Configuration: Using default values"
   fi
 
+  case "$1" in
+    start)
+      kube::multinode::service-start
+      ;;
+    stop)
+      kube::multinode::service-stop
+      ;;
+    *)
+      kube::log::status "Invalid argument '$1' passed to script"
+      ;;
+  esac
+
 }
 
 kube::multinode::service-start(){
@@ -70,8 +63,9 @@ kube::multinode::service-start(){
 }
 
 kube::multinode::service-stop(){
-    kube::log::status "Stop Kubernetes on this node..."
-    . ${BASEDIR}/turndown.sh
+
+  . ${BASEDIR}/turndown.sh
+
 }
 
 kube::multinode::service-main $@
