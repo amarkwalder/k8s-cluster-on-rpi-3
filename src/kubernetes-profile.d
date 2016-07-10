@@ -1,3 +1,5 @@
+. /etc/kubernetes/k8s.conf
+
 docker-bootstrap(){
   /usr/bin/docker -H unix:///var/run/docker-bootstrap.sock "$@"
 }
@@ -33,3 +35,25 @@ docker-rm-all(){
     docker rm ${CIDS}
   fi
 }
+
+kubectl(){
+  /usr/bin/kubectl -s ${MASTER_IP}:8080 $@
+}
+
+reboot-nodes(){
+  for i in $@
+  do
+    echo "Reboot Node $i"
+    ssh $i "sudo reboot < /dev/null > /tmp/reboot.log 2>&1 &"
+  done
+}
+
+shutdown-nodes(){
+  for i in $@
+  do
+    echo "Shutdown Node $i"
+    ssh $i "sudo shutdown now < /dev/null > /tmp/shutdown.log 2>&1 &"
+  done
+}
+
+
