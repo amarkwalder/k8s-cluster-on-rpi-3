@@ -1,67 +1,103 @@
-From 0ddb3a3a1e793e7677625cb63190edc6d0236370 Mon Sep 17 00:00:00 2001
+From 3c3031d475876e3c3cbdc75f089a644c6b2b9795 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Andr=C3=A9=20Markwalder?= <andre.markwalder@ti8m.ch>
-Date: Tue, 5 Jul 2016 01:49:26 +0000
-Subject: [PATCH 1/2] Silent mode extensions and offline capability added.
+Date: Tue, 5 Jul 2016 01:49:56 +0000
+Subject: [PATCH 2/2] Silent mode extensions and offline capability added.
 
 ---
- docker-multinode/kubernetes.sh | 48 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
- create mode 100755 docker-multinode/kubernetes.sh
+ docker-multinode/common.sh     | 51 ++++++++++++++++++++++++++++++++++--------
+ docker-multinode/kubernetes.sh |  4 ++--
+ 2 files changed, 44 insertions(+), 11 deletions(-)
 
-diff --git a/docker-multinode/kubernetes.sh b/docker-multinode/kubernetes.sh
-new file mode 100755
-index 0000000..a497508
---- /dev/null
-+++ b/docker-multinode/kubernetes.sh
-@@ -0,0 +1,48 @@
-+#!/bin/bash
+diff --git a/docker-multinode/common.sh b/docker-multinode/common.sh
+index c1d4e55..aacd60b 100755
+--- a/docker-multinode/common.sh
++++ b/docker-multinode/common.sh
+@@ -17,8 +17,29 @@
+ # Utility functions for Kubernetes in docker setup
+ 
+ kube::multinode::main(){
+-  LATEST_STABLE_K8S_VERSION=$(kube::helpers::curl "https://storage.googleapis.com/kubernetes-release/release/stable.txt")
+-  K8S_VERSION=${K8S_VERSION:-${LATEST_STABLE_K8S_VERSION}}
 +
-+kube::multinode::service-main(){
-+
-+  BASEDIR=$(dirname "$0")
-+  source ${BASEDIR}/common.sh
-+
-+  # 1.) Environment variable CONFIG
-+  # 2.) Location: CONFIG=/etc/kubernetes/k8s.conf.
-+  # 3.) Location: CONFIG=$(dirname "$0")/k8s.conf
-+  # 4.) Location: CONFIG=./k8s.conf
-+  # 5.) Using default values
-+  if [[ ${CONFIG} != "" ]] && [[ -f ${CONFIG} ]]; then
-+    CONFIG=$(realpath ${CONFIG})
-+    kube::log::status "Configuration: Loading configuration values from [${CONFIG}]"
-+    source ${CONFIG}
-+  elif [[ -f /etc/kubernetes/k8s.conf ]]; then
-+    CONFIG=$(realpath /etc/kubernetes/k8s.conf)
-+    kube::log::status "Configuration: Loading configuration values from [${CONFIG}]"
-+    source ${CONFIG}
-+  elif [[ -f $(dirname "$0")/k8s.conf ]]; then
-+    CONFIG=$(realpath $(dirname "$0")/k8s.conf)
-+    kube::log::status "Configuration: Loading configuration values from [${CONFIG}]"
-+    source ${CONFIG}
-+  elif [[ -f ./k8s.conf ]]; then
-+    CONFIG=$(realpath ./k8s.conf)
-+    kube::log::status "Configuration: Loading configuration values from [$(realpath $CONFIG)]"
-+    source $CONFIG
++  # Check if we are offline and have to specify Kubernetes version
++  OFFLINE_MODE=${OFFLINE_MODE:-"false"}
++  if [[ ${OFFLINE_MODE} == "true" ]]; then
++    LATEST_STABLE_K8S_VERSION="UNKNOWN"
++    K8S_VERSION=${K8S_VERSION:-${LATEST_STABLE_K8S_VERSION}}
++    case "${K8S_VERSION}" in
++      UNKNOWN|"")
++        kube::log::error "Error: If the script is executed in offline mode, you have to specify the Kubernetes version (K8S_VERSION)."
++        exit 1
++        ;;
++      *)
++        ;;
++    esac
 +  else
-+    CONFIG=
-+    kube::log::status "Configuration: Using default values"
++    LATEST_STABLE_K8S_VERSION=$(kube::helpers::curl "https://storage.googleapis.com/kubernetes-release/release/stable.txt")
++    K8S_VERSION=${K8S_VERSION:-${LATEST_STABLE_K8S_VERSION}}
 +  fi
 +
-+  MY_IP=$(hostname -I | awk '{print $1}')
-+
-+  kube::log::status "My IP     : ${MY_IP}"
-+  kube::log::status "Master IP : ${MASTER_IP}"
-+
-+  if [[ ${MY_IP} == ${MASTER_IP} ]] || [[ -z ${MASTER_IP} ]]; then
-+    kube::log::status "Start Kubernetes MASTER on this node..."
-+    echo ${BASEDIR}/master.sh
-+  else
-+    kube::log::status "Start Kubernetes WORKER on this node..."
-+    echo ${BASEDIR}/worker.sh
-+  fi
-+}
-+
-+kube::multinode::service-main
++  # Silent mode handling
++  SILENT_MODE=${SILENT_MODE:-"false"}
++  STOP_ALL_CONTAINERS_IN_SILENT_MODE=${STOP_ALL_CONTAINERS_IN_SILENT_MODE:-"Y"}
++  CLEAN_KUBELET_DIR_IN_SILENT_MODE=${CLEAN_KUBELET_DIR_IN_SILENT_MODE:-"Y"}
+ 
+   ETCD_VERSION=${ETCD_VERSION:-"2.2.5"}
+ 
+@@ -87,7 +108,11 @@ kube::multinode::check_params() {
+   kube::log::status "MASTER_IP is set to: ${MASTER_IP}"
+   kube::log::status "ARCH is set to: ${ARCH}"
+   kube::log::status "NET_INTERFACE is set to: ${NET_INTERFACE}"
+-  kube::log::status "--------------------------------------------"
++  kube::log::status "OFFLINE_MODE is set to: ${OFFLINE_MODE}"
++  kube::log::status "SILENT_MODE is set to: ${SILENT_MODE}"
++  kube::log::status "STOP_ALL_CONTAINERS_IN_SILENT_MODE is set to: ${STOP_ALL_CONTAINERS_IN_SILENT_MODE}"
++  kube::log::status "CLEAN_KUBELET_DIR_IN_SILENT_MODE is set to: ${CLEAN_KUBELET_DIR_IN_SILENT_MODE}"
++  kube::log::status "-----------------------------------------------"
+ }
+ 
+ # Detect the OS distro, we support ubuntu, debian, mint, centos, fedora and systemd dist
+@@ -435,8 +460,12 @@ kube::multinode::turndown(){
+   fi
+ 
+   if [[ $(docker ps -q | wc -l) != 0 ]]; then
+-    read -p "Should we stop the other containers that are running too? [Y/n] " stop_containers
+-
++    if [[ ${SILENT_MODE} == "true" ]]; then
++      stop_containers=${STOP_ALL_CONTAINERS_IN_SILENT_MODE}
++      kube::log::status "Silent mode is on: Stop other containers that are running (stop_containers=${stop_containers})..."
++    else
++      read -p "Should we stop the other containers that are running too? [Y/n] " stop_containers
++    fi
+     case $stop_containers in
+       [nN]*)
+         ;; # Do nothing
+@@ -447,8 +476,12 @@ kube::multinode::turndown(){
+   fi
+ 
+   if [[ -d /var/lib/kubelet ]]; then
+-    read -p "Do you want to clean /var/lib/kubelet? [Y/n] " clean_kubelet_dir
+-
++    if [[ ${SILENT_MODE} == "true" ]]; then
++      clean_kubelet_dir=${CLEAN_KUBELET_DIR_IN_SILENT_MODE}
++      kube::log::status "Silent mode is on: Clean /var/lib/kubelet (clean_kubelet_dir=${clean_kubelet_dir})..."
++    else
++      read -p "Do you want to clean /var/lib/kubelet? [Y/n] " clean_kubelet_dir
++    fi
+     case $clean_kubelet_dir in
+       [nN]*)
+         ;; # Do nothing
+@@ -457,8 +490,8 @@ kube::multinode::turndown(){
+         if [[ ! -z $(mount | grep /var/lib/kubelet | awk '{print $3}') ]]; then
+ 
+           # The umount command may be a little bit subborn sometimes, so run the commands twice to ensure the mounts are gone
+-          mount | grep /var/lib/kubelet/* | awk '{print $3}' | xargs umount 1>/dev/null 2>/dev/null
+-          mount | grep /var/lib/kubelet/* | awk '{print $3}' | xargs umount 1>/dev/null 2>/dev/null
++          mount | grep "/var/lib/kubelet/*" | awk '{print $3}' | xargs umount 1>/dev/null 2>/dev/null
++          mount | grep "/var/lib/kubelet/*" | awk '{print $3}' | xargs umount 1>/dev/null 2>/dev/null
+           umount /var/lib/kubelet 1>/dev/null 2>/dev/null
+           umount /var/lib/kubelet 1>/dev/null 2>/dev/null
+         fi
 -- 
 2.1.4
 

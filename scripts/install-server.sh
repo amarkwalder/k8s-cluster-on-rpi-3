@@ -36,7 +36,7 @@ install()
   git config --local user.name "rpi-cluster"
   git am --whitespace=nowarn ${BASEDIR}/src/*.patch >> ${BASEDIR}/logs/console.log 2>&1
   popd > /dev/null 
-  if [ -f ${TMPDIR}/kube-deploy/docker-multinode/kubernetes.sh ]; then
+  if [ $? == 0 ]; then
     spinner-off "[${GREEN}OK${NC}]"
   else
     spinner-off "[${RED}FAILED${NC}]"
@@ -49,10 +49,10 @@ install()
   rm -rf ${K8S_ETC_DIR}
   mkdir -p ${K8S_SCRIPTS_DIR}
   cp ${TMPDIR}/kube-deploy/docker-multinode/common.sh ${K8S_SCRIPTS_DIR} 
-  cp ${TMPDIR}/kube-deploy/docker-multinode/kubernetes.sh ${K8S_SCRIPTS_DIR} 
   cp ${TMPDIR}/kube-deploy/docker-multinode/master.sh ${K8S_SCRIPTS_DIR} 
   cp ${TMPDIR}/kube-deploy/docker-multinode/turndown.sh ${K8S_SCRIPTS_DIR} 
   cp ${TMPDIR}/kube-deploy/docker-multinode/worker.sh ${K8S_SCRIPTS_DIR} 
+  cp ${BASEDIR}/src/kubernetes.sh ${K8S_SCRIPTS_DIR}
   cp ${BASEDIR}/src/kubernetes.service /etc/systemd/system/
   cp ${BASEDIR}/src/kubernetes-profile.d /etc/profile.d/kubernetes.sh
   cat << EOF > ${K8S_ETC_DIR}/k8s.conf 
